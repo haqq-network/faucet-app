@@ -1,0 +1,15 @@
+{
+  "plugins": {
+    "postcss-import": true,
+    "tailwindcss/nesting": true,
+    "tailwindcss": {
+      config: './tailwind.config.js'
+    },
+    "postcss-preset-env": {
+      stage: 3,
+      features: {
+        "nesting-rules": false,
+      }
+    },
+  },
+}
