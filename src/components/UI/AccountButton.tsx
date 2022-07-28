@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import React, { ReactElement } from 'react';
-import rectangle from '../../assets/rectangle.svg';
+// import rectangle from '../../assets/rectangle.svg';
+import { MetamaskAccountIcon } from './MetamaskAccountIcon';
 
 interface WalletButtonProps {
   account: {
@@ -11,15 +12,17 @@ interface WalletButtonProps {
   onBalanceClick?: () => void;
 }
 
-export function AccountButton(props: WalletButtonProps): ReactElement {
+export function AccountButton({
+  account,
+  onAddressClick,
+  onBalanceClick,
+}: WalletButtonProps): ReactElement {
   const balance =
-    Number(props.account.balance) > 0
-      ? parseFloat(props.account.balance).toFixed(2)
-      : '0';
-  const hiddenBalance = `${props.account.account.slice(
+    Number(account.balance) > 0 ? parseFloat(account.balance).toFixed(2) : '0';
+  const hiddenBalance = `${account.account.slice(
     0,
     2,
-  )}...${props.account.account.slice(40, 42)}`;
+  )}...${account.account.slice(40, 42)}`;
 
   const balanceClassNames = clsx(
     'flex items-center justify-between bg-[#04D484] text-white text-base font-semibold not-italic gap-2.5 rounded-md leading-6 py-[2px] max-w-[212px] min-h-[40px] ',
@@ -35,11 +38,11 @@ export function AccountButton(props: WalletButtonProps): ReactElement {
 
   return (
     <div>
-      {props?.account.account ? (
+      {account.account ? (
         <div className={balanceClassNames}>
           <span
             className="ml-[10px]"
-            onClick={props.onBalanceClick}
+            onClick={onBalanceClick}
             style={
               balance.length > 10
                 ? { fontSize: '11.7px' }
@@ -49,12 +52,14 @@ export function AccountButton(props: WalletButtonProps): ReactElement {
             {balance} ISLM
           </span>
           <div className={addressClassNames}>
-            <span onClick={props.onAddressClick}>{hiddenBalance}</span>
-            <img
+            <span onClick={onAddressClick}>{hiddenBalance}</span>
+            {/* static logo for layout test */}
+            {/* <img
               src={rectangle}
               alt="tokenLogo"
               className="w-[16px] h-[16px]"
-            />
+            /> */}
+            <MetamaskAccountIcon address={account.account} size={16} />
           </div>
         </div>
       ) : (
