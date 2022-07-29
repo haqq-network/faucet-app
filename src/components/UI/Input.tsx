@@ -1,45 +1,48 @@
-import React, { ReactElement } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import clsx from 'clsx';
 
 type InputValue = string | number | undefined;
-
+type ChangeEvent = React.ChangeEvent<HTMLInputElement>;
 interface InputProps {
   label?: string;
+  id?: string;
   placeholder?: string;
   value?: InputValue;
-  onChange: (value: InputValue) => void;
+  onChange: (value: InputValue, event?: ChangeEvent) => void;
   state: 'normal' | 'success' | 'error';
   hint?: string;
   type: 'text' | 'number';
   required?: boolean;
 }
 
-export function Input({
+export const Input: FC<InputProps> = ({
   label,
+  id,
   placeholder,
   value,
   onChange,
-  state,
+  state = 'normal',
   hint,
   type,
   required,
-}: InputProps): ReactElement {
-  let stateClass: string;
-  switch (state) {
-    case 'error':
-      stateClass = 'border-[#f50000] outline-none';
-      break;
-    case 'success':
-      stateClass = 'border-[#04D484] outline-none';
-      break;
-    default:
-      stateClass = 'border-gray-400 focus:border-black';
-      break;
-  }
+}) => {
+  const inputId: string | undefined = useMemo(() => {
+    if (id) return id;
+    if (label) return `input-${Math.random()}`;
+    return undefined;
+  }, [id, label]);
+
   const classNames = clsx(
+    {
+      'border-[#f50000] outline-none': state === 'error',
+      'border-[#04D484] outline-none': state === 'success',
+      'border-gray-400 focus:border-black': state === 'normal',
+      'border-black': value && state === 'normal',
+    },
     'block w-full p-2.5 rounded-md text-black text-sm bg-gray-50 border border-solid ',
-    stateClass,
   );
+
+  const memoizedOnChange = useCallback(onChange, [onChange]);
 
   return (
     <div className="mb-6">
@@ -50,14 +53,13 @@ export function Input({
         <span>{label}</span>
         {required && <span className="text-[#04D484]">{' *'}</span>}
       </label>
-
       <input
         type={type}
-        id="walletInput"
+        id={inputId}
         className={classNames}
         placeholder={placeholder}
         required={required}
-        onChange={() => onChange(value)}
+        onChange={(e) => memoizedOnChange?.(e.target.value, e)}
         value={value ?? ''}
       />
       {state === 'error' && (
@@ -67,4 +69,4 @@ export function Input({
       )}
     </div>
   );
-}
+};
