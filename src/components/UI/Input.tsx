@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 
 type InputValue = string | number | undefined;
@@ -21,12 +21,12 @@ export const Input: FC<InputProps> = ({
   placeholder,
   value,
   onChange,
-  state = 'normal',
+  state,
   hint,
   type,
   required,
 }) => {
-  const inputId: string | undefined = useMemo(() => {
+  const inputId = useMemo<string | undefined>(() => {
     if (id) return id;
     if (label) return `input-${Math.random()}`;
     return undefined;
@@ -42,11 +42,24 @@ export const Input: FC<InputProps> = ({
     'block w-full p-2.5 rounded-md text-black text-sm bg-gray-50 border border-solid ',
   );
 
-  const memoizedOnChange = useCallback(onChange, [onChange]);
+  const [input, setInput] = useState<string | number | undefined>('');
+
+  useEffect(() => {
+    setInput(value);
+  }, [value]);
+
+  const handleInputChange = useCallback(
+    (event: ChangeEvent) => {
+      onChange(event.target.value, event);
+      setInput(event.target.value);
+    },
+    [onChange],
+  );
 
   return (
     <div className="mb-6">
       <label
+        id={inputId}
         htmlFor="walletInput"
         className="block mb-1 text-sm font-normal text-gray-900 dark:text-gray-300 w-full"
       >
@@ -59,8 +72,8 @@ export const Input: FC<InputProps> = ({
         className={classNames}
         placeholder={placeholder}
         required={required}
-        onChange={(e) => memoizedOnChange?.(e.target.value, e)}
-        value={value ?? ''}
+        onChange={handleInputChange}
+        value={input}
       />
       {state === 'error' && (
         <label className="block text-sm font-normal text-[#f50000]">
