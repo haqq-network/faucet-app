@@ -41,21 +41,24 @@ export function Faucet(): ReactElement {
   const [isTokensClaimed, setisTokensClaimed] = useState<boolean>(false);
   const [claimInfo, setClaimInfo] = useState<ClaimInfo>();
   const [claimIsLoading, setClaimIsLoading] = useState<boolean>(false);
-  const checkGHKey = useCallback(async (gh_key: any) => {
-    console.log(`checkGHKey call`);
+  const checkGHKey = useCallback(
+    async (gh_key: any) => {
+      console.log(`checkGHKey call`);
 
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ gh_key }),
-    };
+      const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ gh_key }),
+      };
 
-    const requestUrl = `${serviceConfig.endpoint}/github/check_key`;
+      const requestUrl = `${serviceConfig.endpoint}/github/check_key`;
 
-    const response = await fetch(requestUrl, requestOptions);
-    const userData = await response.json();
-    return userData;
-  }, []);
+      const response = await fetch(requestUrl, requestOptions);
+      const userData = await response.json();
+      return userData;
+    },
+    [serviceConfig],
+  );
 
   useEffect(() => {
     console.log(`useEffect`);
@@ -85,7 +88,7 @@ export function Faucet(): ReactElement {
       setIsGHKeyChecked(true);
       setIsAuthenticated(false);
     }
-  }, [checkGHKey, isAuthenticated]);
+  }, [checkGHKey, isAuthenticated, networkNeedsChange]);
 
   const handleGithubLogin = useCallback(async () => {
     console.log(`test`);
@@ -198,13 +201,7 @@ export function Faucet(): ReactElement {
     console.log(`handleRequestTokens -> response: ${response}`);
   }
 
-  useEffect(() => {
-    if (ghKey) {
-      getClaimInfo();
-    }
-  }, [account.address, ghKey]);
-
-  async function getClaimInfo() {
+  const getClaimInfo = useCallback(async () => {
     console.log('Request claim info');
 
     console.log('Request ghKey: ', ghKey);
@@ -226,7 +223,37 @@ export function Faucet(): ReactElement {
     }
 
     console.log(`getClaimInfo -> response:`, responseJson);
-  }
+  }, [serviceConfig, ghKey]);
+
+  useEffect(() => {
+    if (ghKey) {
+      getClaimInfo();
+    }
+  }, [account.address, ghKey, getClaimInfo]);
+
+  // async function getClaimInfo() {
+  //   console.log('Request claim info');
+
+  //   console.log('Request ghKey: ', ghKey);
+
+  //   const requestOptions = {
+  //     method: 'POST',
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify({
+  //       gh_key: ghKey,
+  //     }),
+  //   };
+
+  //   const requestUrl = `${serviceConfig.endpoint}/chain/claim_info`;
+  //   const response = await fetch(requestUrl, requestOptions);
+  //   const responseJson = await response.json();
+
+  //   if (response.ok) {
+  //     setClaimInfo(responseJson);
+  //   }
+
+  //   console.log(`getClaimInfo -> response:`, responseJson);
+  // }
 
   const countdownRenderer = ({ hours, minutes, seconds, completed }) => {
     if (completed) {

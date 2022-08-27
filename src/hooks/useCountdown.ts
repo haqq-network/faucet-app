@@ -52,7 +52,7 @@ export function useCountdown(seconds: number) {
     return () => {
       clearInterval(intervalRef.current);
     };
-  }, []);
+  });
 
   useEffect(() => {
     if (timeLeft <= 0) {

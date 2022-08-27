@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 
 interface ChainProperties {
   chainId: string;
@@ -62,7 +62,8 @@ export function useConfig(): ConfigHook {
   }, []);
 
   const memoizedHook = useMemo(() => {
-    const { GITHUB_CLIENT_ID, RECAPTCHA_SITE_KEY, SERVICE_ENDPOINT } = process.env;
+    const { GITHUB_CLIENT_ID, RECAPTCHA_SITE_KEY, SERVICE_ENDPOINT } =
+      process.env;
 
     const githubConfig = {
       clientId: GITHUB_CLIENT_ID,

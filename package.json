@@ -44,9 +44,13 @@
     "web3": "1.7.4"
   },
   "devDependencies": {
+    "@babel/preset-env": "7.18.10",
+    "@babel/preset-react": "7.18.6",
+    "@babel/preset-typescript": "7.18.6",
     "@testing-library/jest-dom": "5.16.4",
     "@testing-library/react": "13.3.0",
     "@testing-library/user-event": "14.3.0",
+    "@types/babel__preset-env": "^7",
     "@types/eslint": "8.4.5",
     "@types/events": "3.0.0",
     "@types/jest": "28.1.6",
@@ -68,6 +72,7 @@
     "events": "3.3.0",
     "https-browserify": "1.0.0",
     "jest": "28.1.3",
+    "jest-environment-jsdom": "29.0.1",
     "os-browserify": "0.3.0",
     "parcel": "2.6.2",
     "postcss": "8.4.14",

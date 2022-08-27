@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
-import { Auth0Provider } from '@auth0/auth0-react';
-import { ReactElement, useMemo } from 'react';
-import { useConfig } from './hooks/useConfig';
+// import { Auth0Provider } from '@auth0/auth0-react';
+import { ReactElement } from 'react';
+// import { useConfig } from './hooks/useConfig';
 import { ThemeContainer } from './components/ThemeContainer';
 
 // function AuthContainer({ children }: { children: ReactElement }) {

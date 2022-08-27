@@ -20,6 +20,7 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   rules: {
     '@typescript-eslint/no-var-requires': 0,
+    '@typescript-eslint/no-explicit-any': 0,
   },
   settings: {
     react: { version: reactVersion },

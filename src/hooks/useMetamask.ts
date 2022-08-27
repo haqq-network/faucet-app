@@ -1,8 +1,8 @@
 import {
   useCallback,
   useEffect,
-  useLayoutEffect,
-  useMemo,
+  // useLayoutEffect,
+  // useMemo,
   useRef,
   useState,
 } from 'react';
@@ -48,7 +48,7 @@ declare global {
 
 export function useMetamask(): MetamaskHook {
   const [address, setAddress] = useState<string>();
-  const [balance, setBalance] = useState<string>();
+  // const [balance, setBalance] = useState<string>();
   const onboardingRef = useRef<MetaMaskOnboarding>();
   const { chainProperties } = useConfig();
 
@@ -83,18 +83,18 @@ export function useMetamask(): MetamaskHook {
     }
   }, [handleAccountsChange]);
 
-  const handleGetBalance = useCallback(async (address: string) => {
-    const { ethereum } = window;
+  // const handleGetBalance = useCallback(async (address: string) => {
+  //   const { ethereum } = window;
 
-    if (ethereum) {
-      const balance = await ethereum.request({
-        method: 'eth_getBalance',
-        params: [address, 'latest'],
-      });
+  //   if (ethereum) {
+  //     const balance = await ethereum.request({
+  //       method: 'eth_getBalance',
+  //       params: [address, 'latest'],
+  //     });
 
-      setBalance(balance);
-    }
-  }, []);
+  //     setBalance(balance);
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {
@@ -181,7 +181,11 @@ export function useMetamask(): MetamaskHook {
       params: [],
     });
 
-    console.log(`networkNeedsChange(): ${chainId}, ${chainProperties?.chainId} ${chainId != chainProperties?.chainId}`);
+    console.log(
+      `networkNeedsChange(): ${chainId}, ${chainProperties?.chainId} ${
+        chainId != chainProperties?.chainId
+      }`,
+    );
 
     return chainId != chainProperties?.chainId;
   }, [chainProperties]);

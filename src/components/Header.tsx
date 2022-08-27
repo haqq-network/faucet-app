@@ -1,13 +1,13 @@
 import React, {
   ReactElement,
-  ReactNode,
+  // ReactNode,
   useState,
-  Fragment,
+  // Fragment,
   useCallback,
 } from 'react';
 import styled from '@emotion/styled';
-import clsx from 'clsx';
-import { NavLink } from 'react-router-dom';
+// import clsx from 'clsx';
+// import { NavLink } from 'react-router-dom';
 import { Theme, useTheme } from './ThemeContainer';
 
 const LogoContainer = styled.div`
@@ -61,31 +61,31 @@ function Logo({ className }: { className: string }): ReactElement {
   );
 }
 
-interface HeaderLinkProps {
-  href: string;
-  className?: string;
-  isActive: boolean;
-  children: ReactNode;
-}
+// interface HeaderLinkProps {
+//   href: string;
+//   className?: string;
+//   isActive: boolean;
+//   children: ReactNode;
+// }
 
-function HeaderLink({ children, href, className }: HeaderLinkProps) {
-  return (
-    <NavLink
-      to={href}
-      className={({ isActive }) => {
-        return clsx(
-          'block sm:inline-block px-3 py-2 rounded-md text-base sm:text-sm font-medium',
-          isActive
-            ? 'bg-gray-700/20 text-white'
-            : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-          className,
-        );
-      }}
-    >
-      {children}
-    </NavLink>
-  );
-}
+// function HeaderLink({ children, href, className }: HeaderLinkProps) {
+//   return (
+//     <NavLink
+//       to={href}
+//       className={({ isActive }) => {
+//         return clsx(
+//           'block sm:inline-block px-3 py-2 rounded-md text-base sm:text-sm font-medium',
+//           isActive
+//             ? 'bg-gray-700/20 text-white'
+//             : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+//           className,
+//         );
+//       }}
+//     >
+//       {children}
+//     </NavLink>
+//   );
+// }
 
 function ThemeButton() {
   const { theme, changeTheme } = useTheme();
