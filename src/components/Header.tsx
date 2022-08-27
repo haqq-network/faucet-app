@@ -130,16 +130,16 @@ export function Header(): ReactElement {
     setDropdownOpen(!isDropdownOpen);
   }, [isDropdownOpen, setDropdownOpen]);
 
-  const headerLinks = (
-    <Fragment>
-      <HeaderLink href="/" isActive>
-        Faucet
-      </HeaderLink>
-      <HeaderLink href="/adad" isActive>
-        404
-      </HeaderLink>
-    </Fragment>
-  );
+  // const headerLinks = (
+  //   <Fragment>
+  //     <HeaderLink href="/" isActive>
+  //       Faucet
+  //     </HeaderLink>
+  //     <HeaderLink href="/adad" isActive>
+  //       404
+  //     </HeaderLink>
+  //   </Fragment>
+  // );
 
   return (
     <header className="backdrop-filter backdrop-blur transform-gpu bg-white/30 dark:bg-slate-600/10">
@@ -155,7 +155,7 @@ export function Header(): ReactElement {
               >
                 <span className="sr-only">Open main menu</span>
 
-                <svg
+                {/* <svg
                   className="block h-6 w-6"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -170,7 +170,7 @@ export function Header(): ReactElement {
                     strokeLinejoin="round"
                     d="M4 6h16M4 12h16M4 18h16"
                   />
-                </svg>
+                </svg> */}
 
                 <svg
                   className="hidden h-6 w-6"
@@ -195,9 +195,9 @@ export function Header(): ReactElement {
                 <Logo className="block lg:hidden h-8 w-auto" />
                 <Logo className="hidden lg:block h-8 w-auto" />
               </div>
-              <div className="hidden sm:block sm:ml-6">
+              {/* <div className="hidden sm:block sm:ml-6">
                 <div className="flex space-x-4">{headerLinks}</div>
-              </div>
+              </div> */}
             </div>
             <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
               <ThemeButton />

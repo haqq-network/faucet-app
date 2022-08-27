@@ -5,11 +5,10 @@ interface ChainProperties {
   chainName: string;
   endpoint: string;
   symbol: string;
-  decimals: number;
+  decimals: string;
 }
 
-interface Auth0Config {
-  domain?: string;
+interface GithubConfig {
   clientId?: string;
 }
 
@@ -17,8 +16,13 @@ interface RecaptchaConfig {
   siteKey?: string;
 }
 
+interface ServiceConfig {
+  endpoint?: string;
+}
+
 export interface ConfigHook {
-  auth0Config: Auth0Config;
+  serviceConfig: ServiceConfig;
+  githubConfig: GithubConfig;
   recaptchaConfig: RecaptchaConfig;
   chainProperties?: ChainProperties;
 }
@@ -29,9 +33,9 @@ export function useConfig(): ConfigHook {
     const {
       CHAIN_ID,
       CHAIN_NAME,
-      CHAIN_DECIMALS,
-      CHAIN_SYMBOL,
       CHAIN_ENDPOINT,
+      CHAIN_SYMBOL,
+      CHAIN_DECIMALS,
     } = process.env;
 
     if (
@@ -58,18 +62,21 @@ export function useConfig(): ConfigHook {
   }, []);
 
   const memoizedHook = useMemo(() => {
-    const { AUTH0_DOMAIN, AUTH0_CLIENT_ID, RECAPTCHA_SITE_KEY } = process.env;
+    const { GITHUB_CLIENT_ID, RECAPTCHA_SITE_KEY, SERVICE_ENDPOINT } = process.env;
 
-    const auth0Config = {
-      domain: AUTH0_DOMAIN,
-      clientId: AUTH0_CLIENT_ID,
+    const githubConfig = {
+      clientId: GITHUB_CLIENT_ID,
     };
     const recaptchaConfig = {
       siteKey: RECAPTCHA_SITE_KEY,
     };
+    const serviceConfig = {
+      endpoint: SERVICE_ENDPOINT,
+    };
 
     return {
-      auth0Config,
+      serviceConfig,
+      githubConfig,
       recaptchaConfig,
       chainProperties,
     };

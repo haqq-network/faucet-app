@@ -15,6 +15,7 @@ interface ExternalProvider {
   isStatus?: boolean;
   host?: string;
   path?: string;
+  networkVersion?: string;
   sendAsync?: (
     request: { method: string; params?: Array<any> },
     callback: (error: any, response: any) => void,
@@ -36,6 +37,7 @@ interface MetamaskHook {
   };
   connect: () => Promise<void>;
   selectNetwork: any;
+  networkNeedsChange: any;
 }
 
 declare global {
@@ -168,6 +170,22 @@ export function useMetamask(): MetamaskHook {
     }
   }, [chainProperties]);
 
+  const handleNetworkNeedsChange = useCallback(async () => {
+    const { ethereum } = window;
+    // const networkVersion = ethereum?.networkVersion;
+
+    // ethereum.request({ method: 'eth_chainId' }).
+
+    const chainId = await ethereum?.request({
+      method: 'eth_chainId',
+      params: [],
+    });
+
+    console.log(`networkNeedsChange(): ${chainId}, ${chainProperties?.chainId} ${chainId != chainProperties?.chainId}`);
+
+    return chainId != chainProperties?.chainId;
+  }, [chainProperties]);
+
   return {
     account: {
       address,
@@ -175,5 +193,6 @@ export function useMetamask(): MetamaskHook {
     },
     connect: handleWalletConnect,
     selectNetwork: handleNetworkChange,
+    networkNeedsChange: handleNetworkNeedsChange,
   };
 }

@@ -11,6 +11,8 @@
 /dist
 .env
 .log
+.env.local
 
 /.parcel-cache
 /.cache
+env.local
