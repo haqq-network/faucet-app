@@ -17,10 +17,6 @@ import Countdown from 'react-countdown';
 import SuccessIndicator from 'react-success-indicator';
 import BeatLoader from 'react-spinners/BeatLoader';
 
-// import GithubIcon from 'mdi-react/GithubIcon';
-// import { useRecaptcha } from '../hooks/useRecaptcha';
-
-// available: true, next_claim_sec: 0
 interface ClaimInfo {
   available: boolean;
   next_claim_sec: number;
