@@ -16,3 +16,4 @@
 /.parcel-cache
 /.cache
 env.local
+package-lock.json
