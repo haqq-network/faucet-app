@@ -16,6 +16,7 @@ import Reaptcha from 'reaptcha';
 import Countdown from 'react-countdown';
 import SuccessIndicator from 'react-success-indicator';
 import BeatLoader from 'react-spinners/BeatLoader';
+import { NavLink } from 'react-router-dom';
 
 // import GithubIcon from 'mdi-react/GithubIcon';
 // import { useRecaptcha } from '../hooks/useRecaptcha';
@@ -113,9 +114,13 @@ export function Faucet(): ReactElement {
 
         const requestUrl = `${serviceConfig.endpoint}/github/oauth`;
 
-        const response = await fetch(requestUrl, requestOptions);
-        const ghData = await response.json();
-        return ghData;
+        try {
+          const response = await fetch(requestUrl, requestOptions);
+          const ghData = await response.json();
+          return ghData;
+        } catch (e) {
+          return null;
+        }
       }
 
       async function checkGHKey(gh_key: any) {
@@ -127,30 +132,41 @@ export function Faucet(): ReactElement {
 
         const requestUrl = `${serviceConfig.endpoint}/github/check_key`;
 
-        const response = await fetch(requestUrl, requestOptions);
-        const ghData = await response.json();
-        return ghData;
+        try {
+          const response = await fetch(requestUrl, requestOptions);
+          const ghData = await response.json();
+          return ghData;
+        } catch (e) {
+          return null;
+        }
       }
 
-      fetchGithubAuth(res.code).then((ghData) => {
-        console.log(`ghData->user: ${JSON.stringify(ghData.user)}`);
-        console.log(`ghData->user: ${JSON.stringify(ghData.user?.avatar_url)}`);
-        console.log(`ghData->gh_key: ${JSON.stringify(ghData.gh_key)}`);
+      fetchGithubAuth(res.code)
+        .then((ghData) => {
+          console.log(`ghData->user: ${JSON.stringify(ghData.user)}`);
+          console.log(
+            `ghData->user: ${JSON.stringify(ghData.user?.avatar_url)}`,
+          );
+          console.log(`ghData->gh_key: ${JSON.stringify(ghData.gh_key)}`);
 
-        if (ghData.gh_key !== null && ghData.user !== null) {
-          setGhUser(ghData.user);
-          setGhKey(ghData.gh_key);
+          if (ghData.gh_key !== null && ghData.user !== null) {
+            setGhUser(ghData.user);
+            setGhKey(ghData.gh_key);
 
-          store.set('haqq_gh_key', ghData.gh_key);
+            store.set('haqq_gh_key', ghData.gh_key);
 
-          checkGHKey(ghData.gh_key).then((res) => {
-            console.log(res);
-            setIsGHKeyChecked(true);
-          });
+            checkGHKey(ghData.gh_key).then((res) => {
+              console.log(res);
+              setIsGHKeyChecked(true);
+            });
 
-          setIsAuthenticated(true);
-        }
-      });
+            setIsAuthenticated(true);
+          }
+        })
+        .catch(() => {
+          setIsGHKeyChecked(true);
+          setIsAuthenticated(false);
+        });
     });
   }, [githubConfig, serviceConfig]);
 
@@ -165,10 +181,15 @@ export function Faucet(): ReactElement {
     };
 
     const requestUrl = `${serviceConfig.endpoint}/recaptcha/verify`;
-    const response = await fetch(requestUrl, requestOptions);
 
-    if (response.ok) {
-      setIsRecaptchaVerifyed(true);
+    try {
+      const response = await fetch(requestUrl, requestOptions);
+
+      if (response.ok) {
+        setIsRecaptchaVerifyed(true);
+      }
+    } catch (e) {
+      console.log((e as Error).message);
     }
   }
 
@@ -191,14 +212,18 @@ export function Faucet(): ReactElement {
     };
 
     const requestUrl = `${serviceConfig.endpoint}/chain/claim`;
-    const response = await fetch(requestUrl, requestOptions);
+    try {
+      const response = await fetch(requestUrl, requestOptions);
 
-    if (response.ok) {
-      setClaimIsLoading(false);
-      setisTokensClaimed(true);
+      if (response.ok) {
+        setClaimIsLoading(false);
+        setisTokensClaimed(true);
+      }
+
+      console.log(`handleRequestTokens -> response: ${response}`);
+    } catch (e) {
+      console.log((e as Error).message);
     }
-
-    console.log(`handleRequestTokens -> response: ${response}`);
   }
 
   const getClaimInfo = useCallback(async () => {
