@@ -1274,7 +1274,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-env@npm:7.18.10":
+"@babel/preset-env@npm:7.18.10, @babel/preset-env@npm:^7.4.0":
   version: 7.18.10
   resolution: "@babel/preset-env@npm:7.18.10"
   dependencies:
@@ -2608,6 +2608,18 @@ __metadata:
     mkdirp: ^1.0.4
     rimraf: ^3.0.2
   checksum: 1388777b507b0c592d53f41b9d182e1a8de7763bc625fc07999b8edbc22325f074e5b3ec90af79c89d6987fdb2325bc66d59f483258543c14a43661621f841b0
+  languageName: node
+  linkType: hard
+
+"@parcel/babel-preset-env@npm:2.7.0":
+  version: 2.7.0
+  resolution: "@parcel/babel-preset-env@npm:2.7.0"
+  dependencies:
+    "@babel/preset-env": ^7.4.0
+    semver: ^5.7.1
+  peerDependencies:
+    "@babel/core": ^7.12.0
+  checksum: 96fc0f00c10667e06d86d1d763a68c282f2c6704aefa00e8c649e6a000cbe39ab6cd93d025200dc6c00220dd58c612c469fd6c7c09feb1f8e0cc1cfec1748ab3
   languageName: node
   linkType: hard
 
@@ -7114,6 +7126,7 @@ __metadata:
     "@emotion/styled": 11.9.3
     "@metamask/jazzicon": 2.0.0
     "@metamask/onboarding": 1.0.1
+    "@parcel/babel-preset-env": 2.7.0
     "@testing-library/jest-dom": 5.16.4
     "@testing-library/react": 13.3.0
     "@testing-library/user-event": 14.3.0
