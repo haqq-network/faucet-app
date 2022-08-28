@@ -215,14 +215,19 @@ export function Faucet(): ReactElement {
     };
 
     const requestUrl = `${serviceConfig.endpoint}/chain/claim_info`;
-    const response = await fetch(requestUrl, requestOptions);
-    const responseJson = await response.json();
 
-    if (response.ok) {
-      setClaimInfo(responseJson);
+    try {
+      const response = await fetch(requestUrl, requestOptions);
+      const responseJson = await response.json();
+
+      console.log(`getClaimInfo -> response:`, responseJson);
+
+      if (response.ok) {
+        setClaimInfo(responseJson);
+      }
+    } catch (e) {
+      console.log((e as Error).message);
     }
-
-    console.log(`getClaimInfo -> response:`, responseJson);
   }, [serviceConfig, ghKey]);
 
   useEffect(() => {

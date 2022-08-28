@@ -193,7 +193,6 @@ export function useMetamask(): MetamaskHook {
   return {
     account: {
       address,
-      balance,
     },
     connect: handleWalletConnect,
     selectNetwork: handleNetworkChange,
