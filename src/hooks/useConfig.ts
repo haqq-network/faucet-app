@@ -39,11 +39,11 @@ export function useConfig(): ConfigHook {
     } = process.env;
 
     if (
-      CHAIN_ID !== undefined &&
-      CHAIN_NAME !== undefined &&
-      CHAIN_ENDPOINT !== undefined &&
-      CHAIN_SYMBOL !== undefined &&
-      CHAIN_DECIMALS !== undefined
+      process.env.CHAIN_ID !== undefined &&
+      process.env.CHAIN_NAME !== undefined &&
+      process.env.CHAIN_ENDPOINT !== undefined &&
+      process.env.CHAIN_SYMBOL !== undefined &&
+      process.env.CHAIN_DECIMALS !== undefined
     ) {
       return {
         chainId: CHAIN_ID,
