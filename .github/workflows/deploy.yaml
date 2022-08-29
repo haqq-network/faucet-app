@@ -17,6 +17,7 @@ jobs:
         uses: werf/actions/install@v1.2
       - name: Build with werf
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CHAIN_ID: ${{ secrets.CHAIN_ID }}
           CHAIN_NAME: ${{ secrets.CHAIN_NAME }}
           CHAIN_ENDPOINT: ${{ secrets.CHAIN_ENDPOINT }}
