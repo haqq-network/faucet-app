@@ -8,5 +8,6 @@ deploy:
   namespaceSlug: false
 
 ---
+
 image: faucet-app
 dockerfile: Dockerfile
