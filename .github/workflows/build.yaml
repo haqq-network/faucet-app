@@ -37,7 +37,6 @@ jobs:
           GH_CLIENT_ID: ${{ secrets.GH_CLIENT_ID }}
           RECAPTCHA_SITE_KEY: ${{ secrets.RECAPTCHA_SITE_KEY }}
           SERVICE_ENDPOINT: ${{ secrets.SERVICE_ENDPOINT }}
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         run: yarn build
       - name: Upload artifact
         uses: actions/upload-artifact@v3.1.0

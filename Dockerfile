@@ -1,8 +1,8 @@
 FROM nginx:1.23.1-alpine
 
-WORKDIR /var/www
+COPY nginx/nginx.conf /etc/nginx/
 
-COPY ./nginx.conf /etc/nginx/nginx.conf
-COPY ./dist .
+WORKDIR /var/www
+COPY dist/ ./
 
 EXPOSE 80
