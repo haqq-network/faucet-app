@@ -13,8 +13,9 @@ jobs:
         uses: actions/checkout@v3.0.2
         with:
           fetch-depth: 0
-      - name: Werf build
-        uses: werf/actions/build@v1.2
+      - name: Install werf CLI
+        uses: werf/actions/install@v1.2
+      - name: Build with werf
         env:
           CHAIN_ID: ${{ secrets.CHAIN_ID }}
           CHAIN_NAME: ${{ secrets.CHAIN_NAME }}
@@ -25,3 +26,6 @@ jobs:
           RECAPTCHA_SITE_KEY: ${{ secrets.RECAPTCHA_SITE_KEY }}
           SERVICE_ENDPOINT: ${{ secrets.SERVICE_ENDPOINT }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |-
+          source $(werf ci-env github --as-file)
+          werf build
