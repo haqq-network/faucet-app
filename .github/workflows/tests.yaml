@@ -1,15 +1,11 @@
-name: Testing workflow
+name: Tests
 
 on:
-  - push
+  workflow_call:
 
 defaults:
   run:
     shell: bash
-
-concurrency:
-  group: ${{ github.ref }}
-  cancel-in-progress: true
 
 env:
   NODE_VERSION: '16.16.0'
