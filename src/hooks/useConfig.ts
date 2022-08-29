@@ -62,11 +62,10 @@ export function useConfig(): ConfigHook {
   }, []);
 
   const memoizedHook = useMemo(() => {
-    const { GITHUB_CLIENT_ID, RECAPTCHA_SITE_KEY, SERVICE_ENDPOINT } =
-      process.env;
+    const { GH_CLIENT_ID, RECAPTCHA_SITE_KEY, SERVICE_ENDPOINT } = process.env;
 
     const githubConfig = {
-      clientId: GITHUB_CLIENT_ID,
+      clientId: GH_CLIENT_ID,
     };
     const recaptchaConfig = {
       siteKey: RECAPTCHA_SITE_KEY,

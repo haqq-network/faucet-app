@@ -1,0 +1,23 @@
+name: Deploy
+
+on:
+  push:
+    branches: [dev]
+
+jobs:
+  build-app:
+    uses: ./.github/workflows/build.yaml
+  build-docker:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.0.2
+        with:
+          fetch-depth: 0
+      - name: Download app artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: app
+      - name: Werf build
+        uses: werf/actions/build@v1.2
