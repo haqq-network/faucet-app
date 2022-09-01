@@ -15,13 +15,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { AccountInfo } from './AccountInfo';
 import { useTheme } from './ThemeContainer';
 import { PulseLoader } from 'react-spinners';
-import {
-  useAccount,
-  useConnect,
-  useNetwork,
-  useClient,
-  useSwitchNetwork,
-} from 'wagmi';
+import { useAccount, useConnect, useNetwork } from 'wagmi';
 import { hexValue } from 'ethers/lib/utils';
 
 interface ClaimInfo {
@@ -39,10 +33,8 @@ export function Faucet(): ReactElement {
     isAuthenticated,
     getAccessTokenSilently,
     loginWithPopup,
-    // logout,
     isLoading: isAuth0Loading,
   } = useAuth0();
-  const [needsSelectNetwork, setNeedsSelectNetwork] = useState<boolean>(false);
   const [recaptchaToken, setRecaptchaToken] = useState<string>();
   const [isRecaptchaVerified, setIsRecaptchaVerified] =
     useState<boolean>(false);
@@ -51,12 +43,9 @@ export function Faucet(): ReactElement {
   const [claimIsLoading, setClaimIsLoading] = useState<boolean>(false);
   const { isDark } = useTheme();
   const { isConnected, address } = useAccount();
-  const { connect, connectors, error, isLoading, pendingConnector, status } =
+  const { connect, connectors, error, isLoading, pendingConnector } =
     useConnect();
   const { chain: currentChain } = useNetwork();
-  // const switchNetworkHook = useSwitchNetwork({ chainId: chain.id });
-  // const { switchNetwork } = switchNetworkHook;
-  // console.log({ switchNetworkHook });
 
   const handleServiceRequest = useCallback(
     async (
@@ -80,7 +69,6 @@ export function Faucet(): ReactElement {
     await loginWithPopup();
   }, [loginWithPopup]);
 
-  // const handleLogout = useCallback(() => {
   //   logout();
   // }, [logout]);
 
@@ -142,7 +130,6 @@ export function Faucet(): ReactElement {
 
   const handleNetworkSwitch = useCallback(async () => {
     const { ethereum } = window;
-    // console.log('handleNetworkSwitch', { switchNetwork });
 
     if (ethereum) {
       const targetNetworkIdHex = hexValue(chain.id);
@@ -181,22 +168,6 @@ export function Faucet(): ReactElement {
       requestClaimInfo();
     }
   }, [requestClaimInfo, isAuthenticated]);
-
-  useEffect(() => {
-    if (currentChain?.id !== chain.id) {
-      setNeedsSelectNetwork(true);
-    } else {
-      setNeedsSelectNetwork(false);
-    }
-  }, [currentChain]);
-
-  // useEffect(() => {
-  //   if (address !== undefined && currentChain?.id !== undefined) {
-  //     if (currentChain.id !== chain.id) {
-  //       handleNetworkSwitch();
-  //     }
-  //   }
-  // }, [address, currentChain?.id, handleNetworkSwitch]);
 
   const isRequestTokensAvailable = useMemo(() => {
     return Boolean(
