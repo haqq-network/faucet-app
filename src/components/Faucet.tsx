@@ -64,9 +64,9 @@ export function Faucet(): ReactElement {
     await loginWithPopup();
   }, [loginWithPopup]);
 
-  const handleLogout = useCallback(() => {
-    logout();
-  }, [logout]);
+  // const handleLogout = useCallback(() => {
+  //   logout();
+  // }, [logout]);
 
   const requestClaimInfo = useCallback(async () => {
     setClaimIsLoading(true);
@@ -202,14 +202,13 @@ export function Faucet(): ReactElement {
                     {user.picture && (
                       <img
                         src={user.picture}
-                        alt={user.name}
+                        alt={user.nickname}
                         className="rounded-full h-10 w-10"
                       />
                     )}
-                    <p>{user.name}</p>
+                    <p>{user.nickname}</p>
                   </div>
                 )}
-                <Button onClick={handleLogout}>Logout</Button>
               </div>
             ) : (
               <Button onClick={handleLogin}>Login</Button>
@@ -217,7 +216,7 @@ export function Faucet(): ReactElement {
           </div>
 
           {isAuthenticated && account.address && (
-            <div className="px-5 min-h-[120px]">
+            <div className="px-5 min-h-[130px]">
               <h2 className="text-md font-semibold uppercase text-[#0c0c0c] dark:text-gray-100 mb-5">
                 Request tokens
               </h2>
@@ -253,36 +252,15 @@ export function Faucet(): ReactElement {
               )}
 
               {isTokensClaimed && (
-                <Fragment>
-                  <div className="flex flex-row space-x-4 items-center h-full">
-                    <SuccessIndicator size="36px" color="green" />
-                    <p>Tokens claimed!</p>
-                  </div>
-                  <div>
-                    <p className="text-base  mb-2">
-                      Next request tokens available after
-                    </p>
-                    <Countdown
-                      date={Date.now() + claimInfo.next_claim_sec * 1000}
-                      onComplete={requestClaimInfo}
-                      renderer={({ hours, minutes, seconds }) => {
-                        // Render a countdown
-                        return (
-                          <div className="text-3xl font-medium">
-                            {hours < 10 ? '0' + hours : hours}:
-                            {minutes < 10 ? '0' + minutes : minutes}:
-                            {seconds < 10 ? '0' + seconds : seconds}
-                          </div>
-                        );
-                      }}
-                    />
-                  </div>
-                </Fragment>
+                <div className="flex flex-row space-x-4 items-center h-full">
+                  <SuccessIndicator size="36px" color="green" />
+                  <p>Tokens claimed!</p>
+                </div>
               )}
 
               {isCountDownVisible && (
                 <div>
-                  <p className="text-base  mb-2">
+                  <p className="text-base after:mb-2">
                     Next request tokens available after
                   </p>
                   <Countdown
@@ -291,7 +269,7 @@ export function Faucet(): ReactElement {
                     renderer={({ hours, minutes, seconds }) => {
                       // Render a countdown
                       return (
-                        <div className="text-3xl font-medium">
+                        <div className="text-4xl font-semibold leading-relaxed">
                           {hours < 10 ? '0' + hours : hours}:
                           {minutes < 10 ? '0' + minutes : minutes}:
                           {seconds < 10 ? '0' + seconds : seconds}
