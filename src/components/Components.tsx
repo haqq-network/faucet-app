@@ -66,10 +66,13 @@ export function Button({
 }: ButtonProps): ReactElement {
   const classNames = clsx(
     'inline-block px-6 py-3 text-base leading-4 rounded-md font-medium text-white',
-    'bg-slate-500 hover:bg-slate-600 active:bg-slate-700',
+    'bg-slate-500 ',
     'focus:outline-none focus:ring focus:ring-slate-300',
     block ? 'block w-full' : 'inline-block',
-    { 'opacity-75 not-allowed': disabled },
+    {
+      'opacity-75 cursor-not-allowed': disabled,
+      'hover:bg-slate-600 active:bg-slate-700': !disabled,
+    },
     className,
   );
   return (

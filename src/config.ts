@@ -2,14 +2,6 @@ import { version } from '../package.json';
 
 const buildHash = process.env.BUILD_HASH ?? 'dev';
 
-interface ChainProperties {
-  chainId: string;
-  chainName: string;
-  endpoint: string;
-  symbol: string;
-  decimals: string;
-}
-
 interface RecaptchaConfig {
   siteKey?: string;
 }
@@ -23,54 +15,30 @@ interface Auth0Config {
   clientId?: string;
 }
 
+type Network = 'local' | 'dev' | 'test' | 'main';
+
 export interface AppConfig {
   sentryDsn: string | undefined;
   version: string;
-  publicUrl: string;
   recaptchaConfig: RecaptchaConfig;
-  chainProperties?: ChainProperties;
+  network: Network;
   auth0Config: Auth0Config;
   serviceConfig: ServiceConfig;
 }
 
 const {
-  CHAIN_ID,
-  CHAIN_NAME,
-  CHAIN_ENDPOINT,
-  CHAIN_SYMBOL,
-  CHAIN_DECIMALS,
   AUTH0_DOMAIN,
   AUTH0_CLIENT_ID,
   RECAPTCHA_SITE_KEY,
   SERVICE_ENDPOINT,
+  SENTRY_DSN,
+  NETWORK,
 } = process.env;
 
-function getChainProperties() {
-  if (
-    CHAIN_ID !== undefined &&
-    CHAIN_NAME !== undefined &&
-    CHAIN_ENDPOINT !== undefined &&
-    CHAIN_SYMBOL !== undefined &&
-    CHAIN_DECIMALS !== undefined
-  ) {
-    return {
-      chainId: CHAIN_ID,
-      chainName: CHAIN_NAME,
-      endpoint: CHAIN_ENDPOINT,
-      symbol: CHAIN_SYMBOL,
-      decimals: CHAIN_DECIMALS,
-    };
-  } else {
-    throw new Error(
-      'Some or all chain properties is undefined. Check your env variables.',
-    );
-  }
-}
-
 export const config: AppConfig = {
-  sentryDsn: process.env.SENTRY_DSN,
+  sentryDsn: SENTRY_DSN,
   version: `${version}-${buildHash}`,
-  publicUrl: process.env.PUBLIC_URL ?? '/',
+  network: (NETWORK ?? 'dev') as Network,
   auth0Config: {
     domain: AUTH0_DOMAIN,
     clientId: AUTH0_CLIENT_ID,
@@ -81,5 +49,67 @@ export const config: AppConfig = {
   serviceConfig: {
     endpoint: SERVICE_ENDPOINT,
   },
-  chainProperties: getChainProperties(),
 };
+
+interface Chain {
+  id: number;
+  name: string;
+  network: string;
+  rpcUrls: Record<string, string>;
+  nativeCurrency: {
+    name: string;
+    symbol: string;
+    decimals: number;
+  };
+  testnet: boolean;
+}
+
+const currency: Chain['nativeCurrency'] = {
+  name: 'Islamic Coin',
+  symbol: 'ISLM',
+  decimals: 18,
+};
+
+export const chains: Record<string, Chain> = {
+  local: {
+    id: 5777,
+    name: 'Haqq Localnet',
+    network: 'haqq-localnet',
+    rpcUrls: {
+      default: 'http://127.0.0.1:7545',
+      ws: 'ws://127.0.0.1:7545',
+    },
+    nativeCurrency: currency,
+    testnet: true,
+  },
+  test: {
+    id: 53211,
+    name: 'Haqq Testedge',
+    network: 'haqq-testedge',
+    rpcUrls: {
+      default: 'https://rpc.eth.testedge.haqq.network',
+    },
+    testnet: true,
+    nativeCurrency: currency,
+  },
+  main: {
+    id: 11235,
+    name: 'Haqq Mainnet',
+    network: 'haqq-mainnet',
+    rpcUrls: {
+      default: 'https://rpc.eth.haqq.network',
+    },
+    testnet: false,
+    nativeCurrency: currency,
+  },
+};
+
+export function getChain() {
+  const currentChain = chains[config.network];
+
+  if (!currentChain) {
+    throw new Error(`No configuration for ${config.network}`);
+  }
+
+  return currentChain;
+}

@@ -1,28 +1,45 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useAccount, useBalance } from 'wagmi';
+import { getChain } from '../config';
 import { getFormattedAddress } from '../utils/getFormattedAddress';
 import { IdentIcon } from './IdentIcon';
 
-export function AccountInfo({
-  account,
-}: {
-  account: {
-    address: string;
-    balance?: string;
-  };
-}) {
-  return (
-    <div className="flex flex-col">
-      <div className="flex flex-row space-x-4 items-center h-[40px]">
-        <IdentIcon address={account.address} size={40} />
-        <div className="text-md overflow-hidden text-ellipsis">
-          {getFormattedAddress(account.address, 5)}
-        </div>
-      </div>
+const chain = getChain();
+export function AccountInfo() {
+  const { address } = useAccount();
+  const { data: balance } = useBalance({
+    addressOrName: address,
+    watch: true,
+  });
 
-      {account.balance && (
-        <div>
-          <div>Balance</div>
-          <div>{account.balance}</div>
+  const accBalance = useMemo(() => {
+    if (!balance) {
+      return undefined;
+    }
+
+    return {
+      value: Number.parseFloat(balance.formatted),
+      symbol: chain.nativeCurrency.symbol,
+    };
+  }, [balance]);
+
+  return (
+    <div className="flex flex-row space-x-2">
+      {address && (
+        <div className="flex-1 flex flex-row space-x-4 items-center h-[40px]">
+          <div className="h-[40px] 2-[40px] leading-[0]">
+            <IdentIcon address={address} size={40} />
+          </div>
+          <div className="text-md overflow-hidden text-ellipsis">
+            {getFormattedAddress(address, 5)}
+          </div>
+        </div>
+      )}
+
+      {accBalance && (
+        <div className="flex-1 flex flex-row space-x-4 items-center justify-end h-[40px] font-bold">
+          {accBalance.value.toLocaleString()}{' '}
+          {accBalance.symbol.toLocaleUpperCase()}
         </div>
       )}
     </div>

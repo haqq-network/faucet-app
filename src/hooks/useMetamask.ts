@@ -40,12 +40,6 @@ interface MetamaskHook {
   networkNeedsChange: () => Promise<boolean>;
 }
 
-declare global {
-  interface Window {
-    ethereum: ExternalProvider | undefined;
-  }
-}
-
 export function useMetamask(): MetamaskHook {
   const [address, setAddress] = useState<string>();
   // const [balance, setBalance] = useState<string>();

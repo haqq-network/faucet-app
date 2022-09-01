@@ -7,8 +7,8 @@ import React, {
   useState,
 } from 'react';
 import { Button } from './Components';
-import { config } from '../config';
-import { useMetamask } from '../hooks/useMetamask';
+import { config, getChain } from '../config';
+// import { useMetamask } from '../hooks/useMetamask';
 import Reaptcha from 'reaptcha';
 import Countdown from 'react-countdown';
 import SuccessIndicator from 'react-success-indicator';
@@ -16,6 +16,8 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { AccountInfo } from './AccountInfo';
 import { useTheme } from './ThemeContainer';
 import { PulseLoader } from 'react-spinners';
+import { useAccount, useConnect, useNetwork } from 'wagmi';
+import { hexValue } from 'ethers/lib/utils';
 
 interface ClaimInfo {
   available: boolean;
@@ -24,14 +26,16 @@ interface ClaimInfo {
 
 const { serviceConfig, recaptchaConfig } = config;
 
+const chain = getChain();
+
 export function Faucet(): ReactElement {
-  const { connect, account, selectNetwork, networkNeedsChange } = useMetamask();
   const {
     user,
     isAuthenticated,
     getAccessTokenSilently,
     loginWithPopup,
-    logout,
+    // logout,
+    isLoading: isAuth0Loading,
   } = useAuth0();
   const [needsSelectNetwork, setNeedsSelectNetwork] = useState<boolean>(false);
   const [recaptchaToken, setRecaptchaToken] = useState<string>();
@@ -41,6 +45,11 @@ export function Faucet(): ReactElement {
   const [claimInfo, setClaimInfo] = useState<ClaimInfo>();
   const [claimIsLoading, setClaimIsLoading] = useState<boolean>(false);
   const { isDark } = useTheme();
+  const { isConnected, address } = useAccount();
+  const { connect, connectors, error, isLoading, pendingConnector } =
+    useConnect();
+  const { chain: currentChain } = useNetwork();
+  const targetNetworkIdHex = hexValue(chain.id);
 
   const handleServiceRequest = useCallback(
     async (
@@ -110,7 +119,7 @@ export function Faucet(): ReactElement {
 
     try {
       const response = await handleServiceRequest('chain/claim', {
-        wallet: account.address,
+        wallet: address,
         recaptcha_token: recaptchaToken,
         token,
       });
@@ -122,12 +131,41 @@ export function Faucet(): ReactElement {
     } catch (error) {
       console.error(error);
     }
-  }, [
-    account.address,
-    getAccessTokenSilently,
-    handleServiceRequest,
-    recaptchaToken,
-  ]);
+  }, [address, getAccessTokenSilently, handleServiceRequest, recaptchaToken]);
+
+  const handleNetworkSwitch = useCallback(async () => {
+    const { ethereum } = window;
+    // console.log('handleNetworkSwitch', { targetNetworkIdHex });
+
+    if (ethereum) {
+      try {
+        await ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: targetNetworkIdHex }],
+        });
+      } catch (error: any) {
+        if (error.code === 4902) {
+          try {
+            await ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [
+                {
+                  chainId: targetNetworkIdHex,
+                  chainName: chain.name,
+                  rpcUrls: [chain.rpcUrls.default],
+                  nativeCurrency: chain.nativeCurrency,
+                },
+              ],
+            });
+          } catch (error) {
+            console.error(error);
+          }
+        } else {
+          console.error(error);
+        }
+      }
+    }
+  }, [targetNetworkIdHex]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -136,20 +174,30 @@ export function Faucet(): ReactElement {
   }, [requestClaimInfo, isAuthenticated]);
 
   useEffect(() => {
-    networkNeedsChange().then((needsChange: boolean) => {
-      setNeedsSelectNetwork(needsChange);
-    });
-  }, [account, networkNeedsChange]);
+    if (currentChain?.id !== chain.id) {
+      setNeedsSelectNetwork(true);
+    } else {
+      setNeedsSelectNetwork(false);
+    }
+  }, [currentChain]);
+
+  useEffect(() => {
+    if (address !== undefined && currentChain?.id !== undefined) {
+      if (currentChain.id !== chain.id) {
+        handleNetworkSwitch();
+      }
+    }
+  }, [address, currentChain?.id, handleNetworkSwitch]);
 
   const isRequestTokensAvailable = useMemo(() => {
     return Boolean(
       isAuthenticated &&
-        account.address &&
+        address &&
         claimInfo?.available &&
         isTokensClaimed === false &&
         claimIsLoading === false,
     );
-  }, [account, claimInfo, claimIsLoading, isAuthenticated, isTokensClaimed]);
+  }, [address, claimInfo, claimIsLoading, isAuthenticated, isTokensClaimed]);
 
   const isCountDownVisible = useMemo(() => {
     return Boolean(
@@ -162,33 +210,53 @@ export function Faucet(): ReactElement {
       <div className="mx-auto max-w-md rounded-xl shadow-lg my-20 backdrop-filter backdrop-blur transform-gpu bg-white/50 dark:bg-slate-700/40">
         <div className="flex flex-col space-y-5 py-6">
           <div className="px-5">
-            <h2 className="text-md font-semibold uppercase text-[#0c0c0c] dark:text-gray-100 inline-flex mb-4">
-              Connect wallet
-            </h2>
-
-            <div className="flex flex-row space-x-4">
-              {account.address && (
-                <div className="flex-1">
-                  <AccountInfo account={account} />
-                </div>
-              )}
-
-              {!account.address && (
-                <div className="flex-1">
-                  <Button block onClick={connect}>
-                    Connect wallet
-                  </Button>
-                </div>
-              )}
+            <div className="flex flex-row space-x-4  mb-4">
+              <h2 className="flex-1 text-md font-semibold uppercase text-[#0c0c0c] dark:text-gray-100 inline-flex">
+                Connect wallet
+              </h2>
 
               {needsSelectNetwork && (
-                <div className="flex-1">
-                  <Button block onClick={selectNetwork}>
-                    Switch network
-                  </Button>
+                <div className="flex items-center">
+                  <a
+                    className="text-sm text-[#5baacd] hover:text-[#5baacd]/80 cursor-pointer leading-snug"
+                    onClick={handleNetworkSwitch}
+                  >
+                    Switch to {chain.name}
+                  </a>
                 </div>
               )}
             </div>
+
+            {!isConnected && (
+              <div className="flex flex-col space-y-2">
+                {connectors.map((connector) => {
+                  if (!connector.ready) {
+                    return null;
+                  }
+
+                  return (
+                    <Button
+                      block
+                      key={connector.id}
+                      onClick={() => {
+                        connect({ connector });
+                      }}
+                    >
+                      {connector.name}
+                      {isLoading &&
+                        connector.id === pendingConnector?.id &&
+                        ' (connecting)'}
+                    </Button>
+                  );
+                })}
+
+                {error && <div>{error.message}</div>}
+              </div>
+            )}
+
+            {isConnected && <AccountInfo />}
+
+            <div className="flex flex-row space-y-4"></div>
           </div>
 
           <div className="px-5">
@@ -212,11 +280,13 @@ export function Faucet(): ReactElement {
                 )}
               </div>
             ) : (
-              <Button onClick={handleLogin}>Login</Button>
+              <Button block onClick={handleLogin} disabled={isAuth0Loading}>
+                Login with github
+              </Button>
             )}
           </div>
 
-          {isAuthenticated && account.address && (
+          {isAuthenticated && address && (
             <div className="px-5">
               <h2 className="text-md font-semibold uppercase text-[#0c0c0c] dark:text-gray-100 mb-5">
                 {isCountDownVisible
