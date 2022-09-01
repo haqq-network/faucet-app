@@ -23,9 +23,10 @@ interface ClaimInfo {
   next_claim_sec: number;
 }
 
+const { serviceConfig, recaptchaConfig } = config;
+
 export function Faucet(): ReactElement {
   const { connect, account, selectNetwork, networkNeedsChange } = useMetamask();
-  const { serviceConfig, recaptchaConfig } = config;
   const {
     user,
     isAuthenticated,
@@ -56,22 +57,15 @@ export function Faucet(): ReactElement {
 
       return await fetch(requestUrl, requestOptions);
     },
-    [serviceConfig.endpoint],
+    [],
   );
 
   const handleLogin = useCallback(async () => {
-    console.log('handleLogin');
     await loginWithPopup();
-    // const token = await getAccessTokenWithPopup();
-    // console.log('handleLogin', { token });
-    // setGHToken(token);
   }, [loginWithPopup]);
 
-  const handleLogout = useCallback(async () => {
-    console.log('handleLogout');
-    await logout();
-    // const token = await getAccessTokenWithPopup();
-    setGHToken(undefined);
+  const handleLogout = useCallback(() => {
+    logout();
   }, [logout]);
 
   const requestClaimInfo = useCallback(async () => {
@@ -93,7 +87,6 @@ export function Faucet(): ReactElement {
 
   const handleRecapthcaVerify = useCallback(
     async (value: string) => {
-      // console.log('handleRecapthcaVerify:', { value });
       setRecaptchaToken(value);
 
       try {
@@ -101,12 +94,11 @@ export function Faucet(): ReactElement {
           recaptcha_key: value,
         });
 
-        console.log('handleRecapthcaVerify', { response });
         if (response.ok) {
           setIsRecaptchaVerified(true);
         }
-      } catch (e) {
-        console.log((e as Error).message);
+      } catch (error) {
+        console.error(error);
       }
     },
     [handleServiceRequest],
@@ -123,14 +115,12 @@ export function Faucet(): ReactElement {
         token,
       });
 
-      console.log('handleRequestTokens', { response });
-
       if (response.ok) {
         setClaimIsLoading(false);
         setTokensClaimed(true);
       }
-    } catch (e) {
-      console.log((e as Error).message);
+    } catch (error) {
+      console.error(error);
     }
   }, [
     account.address,
@@ -166,7 +156,6 @@ export function Faucet(): ReactElement {
       isAuthenticated && !claimInfo?.available && claimInfo?.next_claim_sec,
     );
   }, [claimInfo, isAuthenticated]);
-  console.log({ isAuthenticated, isCountDownVisible });
 
   return (
     <div className="container px-2 sm:px-6 lg:px-8 mx-auto">
@@ -201,7 +190,6 @@ export function Faucet(): ReactElement {
               )}
             </div>
           </div>
-
           <div className="px-5">
             <h2 className="text-md font-semibold uppercase text-[#0c0c0c] dark:text-gray-100 mb-4">
               Github Auth
@@ -227,69 +215,70 @@ export function Faucet(): ReactElement {
               <Button onClick={handleLogin}>Login</Button>
             )}
           </div>
+          {isAuthenticated && account.address && (
+            <div className="px-5 min-h-200">
+              <h2 className="text-md font-semibold uppercase text-[#0c0c0c] dark:text-gray-100 mb-5">
+                Request tokens
+              </h2>
 
-          <div className="px-5 min-h-200">
-            <h2 className="text-md font-semibold uppercase text-[#0c0c0c] dark:text-gray-100 mb-5">
-              Request tokens
-            </h2>
+              {claimIsLoading ? (
+                <div className="flex flex-row space-x-4 items-center justify-center">
+                  <BeatLoader color="#5BABCD" speedMultiplier={0.7} />
+                </div>
+              ) : (
+                <Fragment>
+                  {isRequestTokensAvailable && (
+                    <div>
+                      {isRecaptchaVerified ? (
+                        <div>
+                          <Button block onClick={handleRequestTokens}>
+                            Request tokens
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex flex-row space-x-4 items-center justify-center">
+                          <Reaptcha
+                            sitekey={recaptchaConfig.siteKey}
+                            onVerify={handleRecapthcaVerify}
+                            theme="dark"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
 
-            {claimIsLoading ? (
-              <div className="flex flex-row space-x-4 items-center justify-center">
-                <BeatLoader color="#5BABCD" speedMultiplier={0.7} />
-              </div>
-            ) : (
-              <Fragment>
-                {isRequestTokensAvailable && (
-                  <div>
-                    {isRecaptchaVerified ? (
-                      <div>
-                        <Button block onClick={handleRequestTokens}>
-                          Request tokens
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex flex-row space-x-4 items-center justify-center">
-                        <Reaptcha
-                          sitekey={recaptchaConfig.siteKey}
-                          onVerify={handleRecapthcaVerify}
-                          theme="dark"
-                        />
-                      </div>
-                    )}
-                  </div>
-                )}
+                  {isTokensClaimed && (
+                    <div className="flex flex-row space-x-4 items-center justify-center">
+                      <SuccessIndicator size="36px" color="green" />
+                      <p>Tokens claimed!</p>
+                    </div>
+                  )}
 
-                {isTokensClaimed && (
-                  <div className="flex flex-row space-x-4 items-center justify-center">
-                    <SuccessIndicator size="36px" color="green" />
-                    <p>Tokens claimed!</p>
-                  </div>
-                )}
-
-                {isCountDownVisible && (
-                  <div>
-                    <h3 className="text-base font-semibold text-[#0c0c0c] dark:text-gray-100 mb-2">
-                      Next request tokens available after
-                    </h3>
-                    <Countdown
-                      date={Date.now() + claimInfo.next_claim_sec * 1000}
-                      onComplete={requestClaimInfo}
-                      renderer={({ hours, minutes, seconds }) => {
-                        // Render a countdown
-                        return (
-                          <div className="text-xl">
-                            {hours < 10 ? '0' + hours : hours}:
-                            {minutes < 10 ? '0' + minutes : minutes}:
-                            {seconds < 10 ? '0' + seconds : seconds}
-                          </div>
-                        );
-                      }}
-                    />
-                  </div>
-                )}
-              </Fragment>
-            )}
-          </div>
+                  {isCountDownVisible && (
+                    <div>
+                      <h3 className="text-base font-semibold text-[#0c0c0c] dark:text-gray-100 mb-2">
+                        Next request tokens available after
+                      </h3>
+                      <Countdown
+                        date={Date.now() + claimInfo.next_claim_sec * 1000}
+                        onComplete={requestClaimInfo}
+                        renderer={({ hours, minutes, seconds }) => {
+                          // Render a countdown
+                          return (
+                            <div className="text-xl">
+                              {hours < 10 ? '0' + hours : hours}:
+                              {minutes < 10 ? '0' + minutes : minutes}:
+                              {seconds < 10 ? '0' + seconds : seconds}
+                            </div>
+                          );
+                        }}
+                      />
+                    </div>
+                  )}
+                </Fragment>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

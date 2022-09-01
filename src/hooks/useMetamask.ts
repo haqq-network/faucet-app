@@ -32,12 +32,12 @@ interface ExternalProvider {
 
 interface MetamaskHook {
   account: {
-    address: string;
-    balance: string;
+    address?: string;
+    balance?: string;
   };
-  connect: () => Promise<void>;
-  selectNetwork: any;
-  networkNeedsChange: any;
+  connect: () => void;
+  selectNetwork: () => Promise<void>;
+  networkNeedsChange: () => Promise<boolean>;
 }
 
 declare global {
@@ -60,7 +60,6 @@ export function useMetamask(): MetamaskHook {
 
   const handleAccountsChange = useCallback(
     (accounts: Array<string>) => {
-      console.log('useMetamask(): handleAccountsChange');
       if (address !== accounts[0]) {
         setAddress(accounts[0]);
       }
@@ -69,7 +68,6 @@ export function useMetamask(): MetamaskHook {
   );
 
   const handleWalletConnect = useCallback(() => {
-    console.log('useMetamask(): handleWalletConnect');
     if (!MetaMaskOnboarding.isMetaMaskInstalled()) {
       onboardingRef.current?.startOnboarding();
     } else {
@@ -110,9 +108,9 @@ export function useMetamask(): MetamaskHook {
     }
   }, [handleAccountsChange]);
 
-  const handleChainChange = useCallback((chain: any) => {
-    console.log('handleChainChange', { chain });
-  }, []);
+  // const handleChainChange = useCallback((chain: any) => {
+  //   console.log('handleChainChange', { chain });
+  // }, []);
 
   useEffect(() => {
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {
@@ -120,15 +118,15 @@ export function useMetamask(): MetamaskHook {
 
       if (ethereum) {
         ethereum.on('accountsChanged', handleAccountsChange);
-        ethereum.on('chainChanged', handleChainChange);
+        // ethereum.on('chainChanged', handleChainChange);
 
         return () => {
           ethereum.removeListener('accountsChanged', handleAccountsChange);
-          ethereum.removeListener('chainChanged', handleChainChange);
+          // ethereum.removeListener('chainChanged', handleChainChange);
         };
       }
     }
-  }, [handleAccountsChange, handleChainChange]);
+  }, [handleAccountsChange]);
 
   const handleNetworkChange = useCallback(async () => {
     const { ethereum } = window;
@@ -149,7 +147,7 @@ export function useMetamask(): MetamaskHook {
                   chainId: chainProperties.chainId,
                   chainName: chainProperties.chainName,
                   nativeCurrency: {
-                    name: 'IslamicCoin',
+                    name: 'Islamic Coin',
                     symbol: chainProperties.symbol,
                     decimals: chainProperties.decimals,
                   },
@@ -172,20 +170,11 @@ export function useMetamask(): MetamaskHook {
 
   const handleNetworkNeedsChange = useCallback(async () => {
     const { ethereum } = window;
-    // const networkVersion = ethereum?.networkVersion;
-
-    // ethereum.request({ method: 'eth_chainId' }).
 
     const chainId = await ethereum?.request({
       method: 'eth_chainId',
       params: [],
     });
-
-    console.log(
-      `networkNeedsChange(): ${chainId}, ${chainProperties?.chainId} ${
-        chainId != chainProperties?.chainId
-      }`,
-    );
 
     return chainId != chainProperties?.chainId;
   }, [chainProperties]);

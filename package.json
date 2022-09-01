@@ -2,6 +2,10 @@
   "name": "haqq-faucet-app",
   "version": "0.0.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/haqq-network/faucet-app.git"
+  },
   "source": "src/index.html",
   "engines": {
     "node": ">= 16",

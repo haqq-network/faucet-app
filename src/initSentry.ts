@@ -8,7 +8,7 @@ export function initSentry() {
       dsn: config.sentryDsn,
       integrations: [new BrowserTracing()],
       tracesSampleRate: 1.0,
-      debug: true,
+      debug: false,
     });
   } else {
     console.warn(
