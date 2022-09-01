@@ -166,15 +166,15 @@ export function Faucet(): ReactElement {
               Connect wallet
             </h2>
 
-            {account.address && (
-              <div className="mb-0">
-                <AccountInfo account={account} />
-              </div>
-            )}
-
             <div className="flex flex-row space-x-4">
+              {account.address && (
+                <div className="flex-1">
+                  <AccountInfo account={account} />
+                </div>
+              )}
+
               {!account.address && (
-                <div>
+                <div className="flex-1">
                   <Button block onClick={connect}>
                     Connect wallet
                   </Button>
@@ -182,7 +182,7 @@ export function Faucet(): ReactElement {
               )}
 
               {needsSelectNetwork && (
-                <div>
+                <div className="flex-1">
                   <Button block onClick={selectNetwork}>
                     Switch network
                   </Button>
@@ -190,6 +190,7 @@ export function Faucet(): ReactElement {
               )}
             </div>
           </div>
+
           <div className="px-5">
             <h2 className="text-md font-semibold uppercase text-[#0c0c0c] dark:text-gray-100 mb-4">
               Github Auth
@@ -198,7 +199,7 @@ export function Faucet(): ReactElement {
             {isAuthenticated ? (
               <div className="flex flex-row space-x-4">
                 {user && (
-                  <div className="flex flex-row space-x-4 items-center h-full flex-1">
+                  <div className="flex flex-row space-x-4 items-center flex-1">
                     {user.picture && (
                       <img
                         src={user.picture}
@@ -216,13 +217,15 @@ export function Faucet(): ReactElement {
           </div>
 
           {isAuthenticated && account.address && (
-            <div className="px-5 min-h-[130px]">
+            <div className="px-5">
               <h2 className="text-md font-semibold uppercase text-[#0c0c0c] dark:text-gray-100 mb-5">
-                Request tokens
+                {isCountDownVisible
+                  ? 'Next request tokens available after'
+                  : 'Request tokens'}
               </h2>
 
               {claimIsLoading && (
-                <div className="flex flex-row space-x-4 items-center h-full">
+                <div className="flex flex-row space-x-4 items-center my-2">
                   <PulseLoader
                     color="#5baacd"
                     speedMultiplier={0.7}
@@ -240,7 +243,7 @@ export function Faucet(): ReactElement {
                       </Button>
                     </div>
                   ) : (
-                    <div className="flex flex-row space-x-4 items-center h-full">
+                    <div className="flex flex-row space-x-4 items-center">
                       <Reaptcha
                         sitekey={recaptchaConfig.siteKey}
                         onVerify={handleRecapthcaVerify}
@@ -252,24 +255,21 @@ export function Faucet(): ReactElement {
               )}
 
               {isTokensClaimed && (
-                <div className="flex flex-row space-x-4 items-center h-full">
+                <div className="flex flex-row space-x-4 items-center">
                   <SuccessIndicator size="36px" color="green" />
                   <p>Tokens claimed!</p>
                 </div>
               )}
 
               {isCountDownVisible && (
-                <div>
-                  <p className="text-base after:mb-2">
-                    Next request tokens available after
-                  </p>
+                <div className="flex flex-row space-x-4 items-center">
                   <Countdown
                     date={Date.now() + claimInfo.next_claim_sec * 1000}
                     onComplete={requestClaimInfo}
                     renderer={({ hours, minutes, seconds }) => {
                       // Render a countdown
                       return (
-                        <div className="text-4xl font-semibold leading-relaxed">
+                        <div className="text-4xl font-semibold leading-tight">
                           {hours < 10 ? '0' + hours : hours}:
                           {minutes < 10 ? '0' + minutes : minutes}:
                           {seconds < 10 ? '0' + seconds : seconds}
