@@ -11,7 +11,6 @@
   "scripts": {
     "start": "yarn parcel",
     "build": "yarn clean & yarn copy-static & yarn parcel build",
-    "build:docker": "docker build . --file ./Dockerfile",
     "copy-static": "cp -r public/* dist/",
     "clean": "rm -rf ./dist && mkdir ./dist",
     "test": "yarn jest",
@@ -20,6 +19,7 @@
     "format": "yarn prettier --write '**/*.{ts,js,tsx,jsx,cjs,mjs,css,json,md,mdx,html,yaml,yml}'"
   },
   "dependencies": {
+    "@auth0/auth0-react": "1.10.2",
     "@emotion/react": "11.10.0",
     "@emotion/styled": "11.10.0",
     "@metamask/jazzicon": "2.0.0",

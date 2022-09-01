@@ -1,0 +1,126 @@
+name: Push workflow
+
+on:
+  - push
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '16.16.0'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.0.2
+      - name: Setup node
+        uses: actions/setup-node@v3.4.1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+      - name: Install dependencies
+        run: yarn install --immutable
+      - name: Run linters
+        run: yarn lint
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.0.2
+      - name: Setup node
+        uses: actions/setup-node@v3.4.1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+      - name: Install dependencies
+        run: yarn install --immutable
+      - name: Run tests
+        run: yarn test --coverage --maxWorkers 2
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: coverage
+          path: coverage
+
+  build:
+    runs-on: ubuntu-latest
+    needs:
+      - test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.0.2
+      - name: Setup node
+        uses: actions/setup-node@v3.4.1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+      - name: Install dependencies
+        run: yarn install --immutable
+      - name: Build application
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHAIN_ID: ${{ secrets.CHAIN_ID }}
+          CHAIN_NAME: ${{ secrets.CHAIN_NAME }}
+          CHAIN_ENDPOINT: ${{ secrets.CHAIN_ENDPOINT }}
+          CHAIN_SYMBOL: ${{ secrets.CHAIN_SYMBOL }}
+          CHAIN_DECIMALS: ${{ secrets.CHAIN_DECIMALS }}
+          GH_CLIENT_ID: ${{ secrets.GH_CLIENT_ID }}
+          RECAPTCHA_SITE_KEY: ${{ secrets.RECAPTCHA_SITE_KEY }}
+          SERVICE_ENDPOINT: ${{ secrets.SERVICE_ENDPOINT }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          export BUILD_HASH=$(git rev-parse --short "$GITHUB_SHA")
+          yarn copy-static
+          yarn build
+      - name: Upload application artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: app
+          path: dist
+      - name: Build storybook
+        run: yarn build:storybook
+      - name: Upload storybook artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: storybook
+          path: storybook-static
+
+  depoly:
+    runs-on: ubuntu-latest
+    if: contains(github.ref, 'dev')
+    needs:
+      - build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.0.2
+      - name: Setup node
+        uses: actions/setup-node@v3.4.1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+      - name: Install dependencies
+        run: yarn install --immutable
+      - name: Download application artifact
+        uses: actions/download-artifact@v3.0.0
+        with:
+          name: app
+          path: dist
+      - name: Download storybook artifact
+        uses: actions/download-artifact@v3.0.0
+        with:
+          name: storybook
+          path: dist/storybook
+      - name: Deploy to github pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+          yarn gh-pages --dist ./dist --message "chore: deploy to gh-pages" --user "github-actions-bot <support+actions@github.com>" --dotfiles true

@@ -262,7 +262,7 @@ export function Header(): ReactElement {
 
         {isDropdownOpen && (
           <div className="sm:hidden" id="mobile-menu">
-            <div className="px-2 pt-2 pb-3 space-y-1">{headerLinks}</div>
+            {/* <div className="px-2 pt-2 pb-3 space-y-1">{headerLinks}</div> */}
           </div>
         )}
       </nav>

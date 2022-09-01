@@ -8,10 +8,6 @@ interface ChainProperties {
   decimals: string;
 }
 
-interface GithubConfig {
-  clientId?: string;
-}
-
 interface RecaptchaConfig {
   siteKey?: string;
 }
@@ -20,9 +16,15 @@ interface ServiceConfig {
   endpoint?: string;
 }
 
+interface Auth0Config {
+  domain?: string;
+  clientId?: string;
+}
+
 export interface ConfigHook {
+  auth0Config: Auth0Config;
   serviceConfig: ServiceConfig;
-  githubConfig: GithubConfig;
+
   recaptchaConfig: RecaptchaConfig;
   chainProperties?: ChainProperties;
 }
@@ -62,11 +64,18 @@ export function useConfig(): ConfigHook {
   }, []);
 
   const memoizedHook = useMemo(() => {
-    const { GH_CLIENT_ID, RECAPTCHA_SITE_KEY, SERVICE_ENDPOINT } = process.env;
+    const {
+      AUTH0_DOMAIN,
+      AUTH0_CLIENT_ID,
+      RECAPTCHA_SITE_KEY,
+      SERVICE_ENDPOINT,
+    } = process.env;
 
-    const githubConfig = {
-      clientId: GH_CLIENT_ID,
+    const auth0Config = {
+      domain: AUTH0_DOMAIN,
+      clientId: AUTH0_CLIENT_ID,
     };
+
     const recaptchaConfig = {
       siteKey: RECAPTCHA_SITE_KEY,
     };
@@ -76,7 +85,7 @@ export function useConfig(): ConfigHook {
 
     return {
       serviceConfig,
-      githubConfig,
+      auth0Config,
       recaptchaConfig,
       chainProperties,
     };
