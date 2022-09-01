@@ -7,7 +7,7 @@ import {
   useState,
 } from 'react';
 import MetaMaskOnboarding from '@metamask/onboarding';
-import { useConfig } from './useConfig';
+import { config } from '../config';
 
 type ProviderListener = (args: any) => void;
 interface ExternalProvider {
@@ -50,7 +50,7 @@ export function useMetamask(): MetamaskHook {
   const [address, setAddress] = useState<string>();
   // const [balance, setBalance] = useState<string>();
   const onboardingRef = useRef<MetaMaskOnboarding>();
-  const { chainProperties } = useConfig();
+  const { chainProperties } = config;
 
   useEffect(() => {
     if (onboardingRef.current !== undefined) {

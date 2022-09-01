@@ -7,7 +7,7 @@ import React, {
   useState,
 } from 'react';
 import { Button } from './Components';
-import { useConfig } from '../hooks/useConfig';
+import { config } from '../config';
 import { useMetamask } from '../hooks/useMetamask';
 // import store from 'store2';
 // import { ThreeDots } from 'react-loader-spinner';

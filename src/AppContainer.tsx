@@ -1,11 +1,11 @@
 import React, { ReactNode, useMemo } from 'react';
 import { Auth0Provider } from '@auth0/auth0-react';
 import { ReactElement } from 'react';
-import { useConfig } from './hooks/useConfig';
+import { config } from './config';
 import { ThemeContainer } from './components/ThemeContainer';
 
 function AuthContainer({ children }: { children: ReactElement }) {
-  const { auth0Config } = useConfig();
+  const { auth0Config } = config;
 
   const auth0ProviderProperties = useMemo(() => {
     if (!auth0Config.domain || !auth0Config.clientId) {
