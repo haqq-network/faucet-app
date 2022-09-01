@@ -25,13 +25,12 @@ interface ClaimInfo {
 
 export function Faucet(): ReactElement {
   const { connect, account, selectNetwork, networkNeedsChange } = useMetamask();
-  const { serviceConfig, recaptchaConfig } = useConfig();
+  const { serviceConfig, recaptchaConfig } = config;
   const {
     user,
     isAuthenticated,
     getAccessTokenSilently,
     loginWithPopup,
-    getAccessTokenWithPopup,
     logout,
   } = useAuth0();
   const [needsSelectNetwork, setNeedsSelectNetwork] = useState<boolean>(false);
@@ -41,9 +40,6 @@ export function Faucet(): ReactElement {
   const [isTokensClaimed, setTokensClaimed] = useState<boolean>(false);
   const [claimInfo, setClaimInfo] = useState<ClaimInfo>();
   const [claimIsLoading, setClaimIsLoading] = useState<boolean>(false);
-  // const [ghToken, setGHToken] = useState<string>();
-
-  // console.log({ claimInfo });
 
   const handleServiceRequest = useCallback(
     async (
