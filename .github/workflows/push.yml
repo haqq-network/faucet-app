@@ -53,14 +53,10 @@ jobs:
         run: yarn install --immutable
       - name: Build application
         env:
-          CHAIN_ID: ${{ secrets.CHAIN_ID }}
-          CHAIN_NAME: ${{ secrets.CHAIN_NAME }}
-          CHAIN_ENDPOINT: ${{ secrets.CHAIN_ENDPOINT }}
-          CHAIN_SYMBOL: ${{ secrets.CHAIN_SYMBOL }}
-          CHAIN_DECIMALS: ${{ secrets.CHAIN_DECIMALS }}
           AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
           AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
           RECAPTCHA_SITE_KEY: ${{ secrets.RECAPTCHA_SITE_KEY }}
+          NETWORK: ${{ secrets.NETWORK }}
           SERVICE_ENDPOINT: ${{ secrets.SERVICE_ENDPOINT }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         run: |

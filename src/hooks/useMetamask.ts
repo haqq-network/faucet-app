@@ -9,27 +9,6 @@ import {
 import MetaMaskOnboarding from '@metamask/onboarding';
 import { config } from '../config';
 
-type ProviderListener = (args: any) => void;
-interface ExternalProvider {
-  isMetaMask?: boolean;
-  isStatus?: boolean;
-  host?: string;
-  path?: string;
-  networkVersion?: string;
-  sendAsync?: (
-    request: { method: string; params?: Array<any> },
-    callback: (error: any, response: any) => void,
-  ) => void;
-  send?: (
-    request: { method: string; params?: Array<any> },
-    callback: (error: any, response: any) => void,
-  ) => void;
-  request: (request: { method: string; params?: Array<any> }) => Promise<any>;
-  on: (event: string, handler: ProviderListener) => void;
-  addEventListener: (event: string, handler: ProviderListener) => void;
-  removeListener: (event: string, handler: ProviderListener) => void;
-}
-
 interface MetamaskHook {
   account: {
     address?: string;
