@@ -9,7 +9,8 @@
   --font-fallback: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
     'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   --font-emoji: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-  --font-family: 'Noto Sans Mono', var(--font-apple), var(--font-fallback), var(--font-emoji);
+  --font-family: 'Noto Sans Mono', var(--font-apple), var(--font-fallback),
+    var(--font-emoji);
 
   --primary-color: #5baacd;
 
