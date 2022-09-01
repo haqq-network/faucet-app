@@ -15,7 +15,13 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { AccountInfo } from './AccountInfo';
 import { useTheme } from './ThemeContainer';
 import { PulseLoader } from 'react-spinners';
-import { useAccount, useConnect, useNetwork } from 'wagmi';
+import {
+  useAccount,
+  useConnect,
+  useNetwork,
+  useClient,
+  useSwitchNetwork,
+} from 'wagmi';
 import { hexValue } from 'ethers/lib/utils';
 
 interface ClaimInfo {
@@ -45,10 +51,12 @@ export function Faucet(): ReactElement {
   const [claimIsLoading, setClaimIsLoading] = useState<boolean>(false);
   const { isDark } = useTheme();
   const { isConnected, address } = useAccount();
-  const { connect, connectors, error, isLoading, pendingConnector } =
+  const { connect, connectors, error, isLoading, pendingConnector, status } =
     useConnect();
   const { chain: currentChain } = useNetwork();
-  const targetNetworkIdHex = hexValue(chain.id);
+  // const switchNetworkHook = useSwitchNetwork({ chainId: chain.id });
+  // const { switchNetwork } = switchNetworkHook;
+  // console.log({ switchNetworkHook });
 
   const handleServiceRequest = useCallback(
     async (
@@ -134,9 +142,11 @@ export function Faucet(): ReactElement {
 
   const handleNetworkSwitch = useCallback(async () => {
     const { ethereum } = window;
-    // console.log('handleNetworkSwitch', { targetNetworkIdHex });
+    // console.log('handleNetworkSwitch', { switchNetwork });
 
     if (ethereum) {
+      const targetNetworkIdHex = hexValue(chain.id);
+
       try {
         await ethereum.request({
           method: 'wallet_switchEthereumChain',
@@ -164,7 +174,7 @@ export function Faucet(): ReactElement {
         }
       }
     }
-  }, [targetNetworkIdHex]);
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -180,13 +190,13 @@ export function Faucet(): ReactElement {
     }
   }, [currentChain]);
 
-  useEffect(() => {
-    if (address !== undefined && currentChain?.id !== undefined) {
-      if (currentChain.id !== chain.id) {
-        handleNetworkSwitch();
-      }
-    }
-  }, [address, currentChain?.id, handleNetworkSwitch]);
+  // useEffect(() => {
+  //   if (address !== undefined && currentChain?.id !== undefined) {
+  //     if (currentChain.id !== chain.id) {
+  //       handleNetworkSwitch();
+  //     }
+  //   }
+  // }, [address, currentChain?.id, handleNetworkSwitch]);
 
   const isRequestTokensAvailable = useMemo(() => {
     return Boolean(
@@ -214,7 +224,7 @@ export function Faucet(): ReactElement {
                 Connect wallet
               </h2>
 
-              {needsSelectNetwork && (
+              {currentChain?.unsupported && (
                 <div className="flex items-center">
                   <a
                     className="text-sm text-[#5baacd] hover:text-[#5baacd]/80 cursor-pointer leading-snug"

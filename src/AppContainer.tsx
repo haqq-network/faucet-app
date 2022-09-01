@@ -1,6 +1,12 @@
 import React, { ReactElement, ReactNode, useMemo } from 'react';
 import { Auth0Provider } from '@auth0/auth0-react';
-import { Chain, configureChains, createClient, WagmiConfig } from 'wagmi';
+import {
+  Chain,
+  configureChains,
+  Connector,
+  createClient,
+  WagmiConfig,
+} from 'wagmi';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
@@ -30,11 +36,7 @@ function AuthContainer({ children }: { children: ReactElement }) {
 }
 
 function WagmiContainer({ children }: { children: ReactElement }) {
-  const {
-    provider,
-    // webSocketProvider,
-    chains,
-  } = useMemo(() => {
+  const { provider, webSocketProvider, chains } = useMemo(() => {
     return configureChains(
       [chain as Chain],
       [
@@ -51,7 +53,6 @@ function WagmiContainer({ children }: { children: ReactElement }) {
 
   const connectors = useMemo(() => {
     return [
-      new MetaMaskConnector({ chains }),
       new WalletConnectConnector({
         chains,
         options: {},
@@ -65,10 +66,11 @@ function WagmiContainer({ children }: { children: ReactElement }) {
   const client = useMemo(() => {
     return createClient({
       provider,
+      webSocketProvider,
       connectors,
       autoConnect: true,
     });
-  }, [connectors, provider]);
+  }, [connectors, provider, webSocketProvider]);
 
   return <WagmiConfig client={client}>{children}</WagmiConfig>;
 }
