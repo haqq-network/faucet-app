@@ -218,7 +218,7 @@ export function Faucet(): ReactElement {
             )}
           </div>
           {isAuthenticated && account.address && (
-            <div className="px-5 min-h-200">
+            <div className="px-5 min-h-[40px]">
               <h2 className="text-md font-semibold uppercase text-[#0c0c0c] dark:text-gray-100 mb-5">
                 Request tokens
               </h2>
