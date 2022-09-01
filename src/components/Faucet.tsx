@@ -17,6 +17,7 @@ import SuccessIndicator from 'react-success-indicator';
 import BeatLoader from 'react-spinners/BeatLoader';
 import { useAuth0 } from '@auth0/auth0-react';
 import { AccountInfo } from './AccountInfo';
+import { useTheme } from './ThemeContainer';
 
 interface ClaimInfo {
   available: boolean;
@@ -41,6 +42,7 @@ export function Faucet(): ReactElement {
   const [isTokensClaimed, setTokensClaimed] = useState<boolean>(false);
   const [claimInfo, setClaimInfo] = useState<ClaimInfo>();
   const [claimIsLoading, setClaimIsLoading] = useState<boolean>(false);
+  const { isDark } = useTheme();
 
   const handleServiceRequest = useCallback(
     async (
@@ -240,7 +242,7 @@ export function Faucet(): ReactElement {
                           <Reaptcha
                             sitekey={recaptchaConfig.siteKey}
                             onVerify={handleRecapthcaVerify}
-                            theme="dark"
+                            theme={isDark ? 'dark' : 'light'}
                           />
                         </div>
                       )}
