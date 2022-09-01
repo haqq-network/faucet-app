@@ -9,15 +9,13 @@ import React, {
 import { Button } from './Components';
 import { config } from '../config';
 import { useMetamask } from '../hooks/useMetamask';
-// import store from 'store2';
-// import { ThreeDots } from 'react-loader-spinner';
 import Reaptcha from 'reaptcha';
 import Countdown from 'react-countdown';
 import SuccessIndicator from 'react-success-indicator';
-import BeatLoader from 'react-spinners/BeatLoader';
 import { useAuth0 } from '@auth0/auth0-react';
 import { AccountInfo } from './AccountInfo';
 import { useTheme } from './ThemeContainer';
+import { PulseLoader } from 'react-spinners';
 
 interface ClaimInfo {
   available: boolean;
@@ -71,8 +69,8 @@ export function Faucet(): ReactElement {
   }, [logout]);
 
   const requestClaimInfo = useCallback(async () => {
-    const token = await getAccessTokenSilently();
     setClaimIsLoading(true);
+    const token = await getAccessTokenSilently();
 
     try {
       const response = await handleServiceRequest(`chain/claim_info`, {
@@ -107,8 +105,8 @@ export function Faucet(): ReactElement {
   );
 
   const handleRequestTokens = useCallback(async () => {
-    const token = await getAccessTokenSilently();
     setClaimIsLoading(true);
+    const token = await getAccessTokenSilently();
 
     try {
       const response = await handleServiceRequest('chain/claim', {
@@ -200,7 +198,7 @@ export function Faucet(): ReactElement {
             {isAuthenticated ? (
               <div className="flex flex-row space-x-4">
                 {user && (
-                  <div className="flex flex-row space-x-4 items-center flex-1">
+                  <div className="flex flex-row space-x-4 items-center h-full flex-1">
                     {user.picture && (
                       <img
                         src={user.picture}
@@ -217,67 +215,91 @@ export function Faucet(): ReactElement {
               <Button onClick={handleLogin}>Login</Button>
             )}
           </div>
+
           {isAuthenticated && account.address && (
-            <div className="px-5 min-h-[40px]">
+            <div className="px-5 min-h-[120px]">
               <h2 className="text-md font-semibold uppercase text-[#0c0c0c] dark:text-gray-100 mb-5">
                 Request tokens
               </h2>
 
-              {claimIsLoading ? (
-                <div className="flex flex-row space-x-4 items-center justify-center">
-                  <BeatLoader color="#5BABCD" speedMultiplier={0.7} />
+              {claimIsLoading && (
+                <div className="flex flex-row space-x-4 items-center h-full">
+                  <PulseLoader
+                    color="#5baacd"
+                    speedMultiplier={0.7}
+                    size={16}
+                  />
                 </div>
-              ) : (
-                <Fragment>
-                  {isRequestTokensAvailable && (
-                    <div>
-                      {isRecaptchaVerified ? (
-                        <div>
-                          <Button block onClick={handleRequestTokens}>
-                            Request tokens
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="flex flex-row space-x-4 items-center justify-center">
-                          <Reaptcha
-                            sitekey={recaptchaConfig.siteKey}
-                            onVerify={handleRecapthcaVerify}
-                            theme={isDark ? 'dark' : 'light'}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  )}
+              )}
 
-                  {isTokensClaimed && (
-                    <div className="flex flex-row space-x-4 items-center justify-center">
-                      <SuccessIndicator size="36px" color="green" />
-                      <p>Tokens claimed!</p>
-                    </div>
-                  )}
-
-                  {isCountDownVisible && (
+              {isRequestTokensAvailable && (
+                <div>
+                  {isRecaptchaVerified ? (
                     <div>
-                      <h3 className="text-base font-semibold text-[#0c0c0c] dark:text-gray-100 mb-2">
-                        Next request tokens available after
-                      </h3>
-                      <Countdown
-                        date={Date.now() + claimInfo.next_claim_sec * 1000}
-                        onComplete={requestClaimInfo}
-                        renderer={({ hours, minutes, seconds }) => {
-                          // Render a countdown
-                          return (
-                            <div className="text-xl">
-                              {hours < 10 ? '0' + hours : hours}:
-                              {minutes < 10 ? '0' + minutes : minutes}:
-                              {seconds < 10 ? '0' + seconds : seconds}
-                            </div>
-                          );
-                        }}
+                      <Button block onClick={handleRequestTokens}>
+                        Request tokens
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-row space-x-4 items-center h-full">
+                      <Reaptcha
+                        sitekey={recaptchaConfig.siteKey}
+                        onVerify={handleRecapthcaVerify}
+                        theme={isDark ? 'dark' : 'light'}
                       />
                     </div>
                   )}
+                </div>
+              )}
+
+              {isTokensClaimed && (
+                <Fragment>
+                  <div className="flex flex-row space-x-4 items-center h-full">
+                    <SuccessIndicator size="36px" color="green" />
+                    <p>Tokens claimed!</p>
+                  </div>
+                  <div>
+                    <p className="text-base  mb-2">
+                      Next request tokens available after
+                    </p>
+                    <Countdown
+                      date={Date.now() + claimInfo.next_claim_sec * 1000}
+                      onComplete={requestClaimInfo}
+                      renderer={({ hours, minutes, seconds }) => {
+                        // Render a countdown
+                        return (
+                          <div className="text-3xl font-medium">
+                            {hours < 10 ? '0' + hours : hours}:
+                            {minutes < 10 ? '0' + minutes : minutes}:
+                            {seconds < 10 ? '0' + seconds : seconds}
+                          </div>
+                        );
+                      }}
+                    />
+                  </div>
                 </Fragment>
+              )}
+
+              {isCountDownVisible && (
+                <div>
+                  <p className="text-base  mb-2">
+                    Next request tokens available after
+                  </p>
+                  <Countdown
+                    date={Date.now() + claimInfo.next_claim_sec * 1000}
+                    onComplete={requestClaimInfo}
+                    renderer={({ hours, minutes, seconds }) => {
+                      // Render a countdown
+                      return (
+                        <div className="text-3xl font-medium">
+                          {hours < 10 ? '0' + hours : hours}:
+                          {minutes < 10 ? '0' + minutes : minutes}:
+                          {seconds < 10 ? '0' + seconds : seconds}
+                        </div>
+                      );
+                    }}
+                  />
+                </div>
               )}
             </div>
           )}
