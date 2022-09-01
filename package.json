@@ -27,6 +27,7 @@
     "@sentry/react": "7.12.0",
     "@sentry/tracing": "7.12.0",
     "clsx": "1.2.1",
+    "gh-pages": "4.0.0",
     "react": "18.2.0",
     "react-countdown": "2.3.2",
     "react-dom": "18.2.0",
