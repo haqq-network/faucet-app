@@ -3,11 +3,16 @@ import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import { AppContainer } from './AppContainer';
 import './index.css';
-// import { reportWebVitals } from './reportWebVitals';
+
+if (process.env.NODE_ENV === 'production') {
+  import('./initSentry').then(({ initSentry }) => {
+    initSentry();
+  });
+}
 
 function startApp() {
-  const rootElement = document.getElementById('root') as HTMLElement;
-  const root = createRoot(rootElement);
+  const rootElement = document.getElementById('root');
+  const root = createRoot(rootElement as HTMLElement);
 
   root.render(
     <StrictMode>
@@ -18,7 +23,6 @@ function startApp() {
   );
 }
 
-// TODO: integrate with sentry;
-// initSentry()
-startApp();
-// reportWebVitals(console.log);
+document.addEventListener('DOMContentLoaded', () => {
+  startApp();
+});

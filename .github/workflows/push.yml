@@ -78,6 +78,7 @@ jobs:
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         run: |
           export BUILD_HASH=$(git rev-parse --short "$GITHUB_SHA")
+          yarn clean
           yarn copy-static
           yarn build
       - name: Upload application artifact
