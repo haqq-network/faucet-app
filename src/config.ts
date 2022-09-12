@@ -82,12 +82,22 @@ export const chains: Record<string, Chain> = {
     nativeCurrency: currency,
     testnet: true,
   },
-  test: {
+  testedge: {
     id: 53211,
     name: 'Haqq Testedge',
     network: 'haqq-testedge',
     rpcUrls: {
       default: 'https://rpc.eth.testedge.haqq.network',
+    },
+    testnet: true,
+    nativeCurrency: currency,
+  },
+  testedge2: {
+    id: 54211,
+    name: 'Haqq TestEdge2',
+    network: 'haqq-testedge2',
+    rpcUrls: {
+      default: 'https://rpc.eth.testedge2.haqq.network',
     },
     testnet: true,
     nativeCurrency: currency,
