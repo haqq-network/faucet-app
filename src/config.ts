@@ -37,7 +37,7 @@ const {
 
 export const config: AppConfig = {
   sentryDsn: SENTRY_DSN,
-  version: `${version}-${buildHash}`,
+  version: `${version}`,
   network: (NETWORK ?? 'dev') as Network,
   auth0Config: {
     domain: AUTH0_DOMAIN,

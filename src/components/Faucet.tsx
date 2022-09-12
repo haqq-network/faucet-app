@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import { Button } from './Components';
 import { config, getChain } from '../config';
-// import { useMetamask } from '../hooks/useMetamask';
 import Reaptcha from 'reaptcha';
 import Countdown from 'react-countdown';
 import SuccessIndicator from 'react-success-indicator';
@@ -235,8 +234,6 @@ export function Faucet(): ReactElement {
             )}
 
             {isConnected && <AccountInfo />}
-
-            <div className="flex flex-row space-y-4"></div>
           </div>
 
           <div className="px-5">
@@ -271,7 +268,7 @@ export function Faucet(): ReactElement {
               <h2 className="text-md font-semibold uppercase text-[#0c0c0c] dark:text-gray-100 mb-5">
                 {isCountDownVisible
                   ? 'Next request tokens available after'
-                  : 'Request tokens'}
+                  : 'Claim tokens'}
               </h2>
 
               {claimIsLoading && (

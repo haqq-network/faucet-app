@@ -3,13 +3,13 @@ import { Auth0Provider } from '@auth0/auth0-react';
 import {
   Chain,
   configureChains,
-  Connector,
+  // Connector,
   createClient,
   WagmiConfig,
 } from 'wagmi';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import { InjectedConnector } from 'wagmi/connectors/injected';
-import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
+// import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 import { config, getChain } from './config';
 import { ThemeContainer } from './components/ThemeContainer';
@@ -29,6 +29,7 @@ function AuthContainer({ children }: { children: ReactElement }) {
       domain: auth0Config.domain ?? '',
       clientId: auth0Config.clientId ?? '',
       redirectUri: window.location.origin,
+      useRefreshTokens: true,
     };
   }, []);
 
